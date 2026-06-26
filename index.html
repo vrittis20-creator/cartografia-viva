@@ -11,6 +11,7 @@
 <title>Cartografía Viva — Saladillo</title>
 <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
 <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="sitios.js"></script>
 <script>
 window.GEO_SALADILLO = {
   bounds: {"minLat":-35.6741146,"maxLat":-35.578176,"minLon":-59.8297658,"maxLon":-59.661084},
@@ -130,6 +131,11 @@ window.GEO_SALADILLO = {
     align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.4);font-family:'Arial Narrow',sans-serif;
     font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
   #ai-launch .dot{width:8px;height:8px;border-radius:50%;background:var(--sun);animation:pulse 2.6s infinite}
+  #links-bar{position:absolute;left:14px;bottom:14px;z-index:6;display:flex;gap:7px;flex-wrap:wrap;max-width:60%}
+  #links-bar a{font-family:'Arial Narrow',sans-serif;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+    background:rgba(20,16,12,.78);color:var(--paper);border:1px solid var(--sun);border-radius:20px;
+    padding:6px 11px;text-decoration:none;display:flex;align-items:center;gap:5px;backdrop-filter:blur(2px)}
+  #links-bar a:hover{background:var(--sun);color:var(--ink)}
   #ai{position:absolute;inset:0;z-index:10;background:var(--paper);display:flex;flex-direction:column;
     transform:translateY(100%);transition:transform .42s cubic-bezier(.2,.8,.2,1)}
   #ai.open{transform:translateY(0)}
@@ -254,6 +260,7 @@ window.GEO_SALADILLO = {
       <button class="hot" data-pt="1"><span class="ring"><span class="num">2</span></span></button>
       <button class="hot" data-pt="2"><span class="ring"><span class="num">3</span></span></button>
       <button id="ai-launch"><span class="dot"></span>Preguntale al lugar</button>
+      <div id="links-bar"></div>
     </div>
     <section id="panel">
       <div class="panel-head"><span class="tag" id="p-tag">Punto</span><h2 id="p-title">—</h2>
@@ -323,183 +330,29 @@ const CAT = {
   mural:{color:"#378add", label:"Murales"}
 };
 
-const SITIO = { ciudad:"Saladillo", lugares:[
-  {
-    id:"galpon", nombre:"Galpón ferroviario", x:0.40, y:0.63, cat:"museo",
-    titulo:"Galpón ferroviario — fotogrametría",
-    modelo:"modelos/galpon.glb",   // ← tu .glb real. Poné el archivo en la carpeta "modelos".
-    paleta:["#7d2e1c","#8a8d72","#3a3530","#c9bca3","#1a1410"],
-    ai:{inicial:"G",nombre:"Voz del galpón",
-      intro:"Soy el galpón del ferrocarril. Acá se guardó y reparó buena parte de la historia del pueblo. Preguntame.",
-      sugerencias:["¿Qué guardabas?","¿De cuándo sos?","¿Qué pasa hoy acá?"],
-      fuentes:[
-        "El galpón ferroviario formaba parte del complejo del ferrocarril de Saladillo, usado para resguardo y mantenimiento.",
-        "El ferrocarril fue durante décadas el principal motor de trabajo de la zona; sus galpones son testigos de esa época.",
-        "Tras el repliegue del servicio, el predio y sus galpones quedaron como espacio patrimonial.",
-        "El galpón fue registrado en fotogrametría como parte del archivo digital de Cartografía Viva."
-      ]},
-    puntos:[
-      {tag:"El trabajo",titulo:"Lo que pasaba adentro",meta:"Testimonio",tipo:"audio",audio:"Ex ferroviario — 2:30",
-       cuerpo:["La voz de quienes trabajaron en el ferrocarril reconstruye la vida dentro del galpón."]},
-      {tag:"La estructura",titulo:"Cómo está hecho",meta:"Registro 3D",tipo:"galeria",gal:["Exterior","Interior","Detalle"],
-       cuerpo:["El modelo 3D permite recorrer el galpón y observar su estructura de cerca."]},
-      {tag:"Hoy",titulo:"De depósito a patrimonio",meta:"Cartografía de mitos",tipo:"mito",
-       mito:{historica:"El galpón se preserva como parte del patrimonio ferroviario del predio.",
-             popular:"Para el barrio sigue siendo, antes que patrimonio, 'el galpón' de toda la vida."},
-       cuerpo:["Lo que para una placa es patrimonio, para el vecino es memoria cotidiana."]}
-    ]
-  },
-  {
-    id:"museo-centro", nombre:"Museo a Cielo Abierto", x:0.375, y:0.66, cat:"museo",
-    titulo:"Museo a Cielo Abierto — núcleo del predio",
-    modelo:"modelos/galpon.glb",
-    paleta:["#3a6b4a","#e8a33d","#7d2e1c","#4b3b67","#efe7d6"],
-    ai:{inicial:"M",nombre:"Voz del Museo",
-      intro:"Soy el Museo a Cielo Abierto. No tengo paredes: mis obras viven en el predio del ferrocarril. Preguntame.",
-      sugerencias:["¿Qué murales tenés?","¿Por qué acá?","¿Cómo te recorro?"],
-      fuentes:[
-        "El Museo a Cielo Abierto de Saladillo reúne murales pintados en el espacio público, en torno al predio del antiguo ferrocarril y las plazas cercanas.",
-        "Las obras se realizaron en distintas ediciones de festivales de muralismo, con artistas locales e invitados.",
-        "El recorrido conecta varias obras a cielo abierto; la comunidad lo transita especialmente en cada aniversario del festival.",
-        "Varias de las obras del predio cuentan con registro en fotogrametría y fotos 360°, base de esta cartografía digital."
-      ]},
-    puntos:[
-      {tag:"Las obras",titulo:"Murales del predio",meta:"Recorrido",tipo:"galeria",gal:["Obra norte","Obra central","Obra sur"],
-       cuerpo:["Varias obras conviven en el predio. Cada una tiene su artista, su año y su historia de barrio."]},
-      {tag:"El lugar",titulo:"Por qué el predio del ferrocarril",meta:"Contexto",tipo:"audio",audio:"Relato de gestión — 2:00",
-       cuerpo:["El predio ferroviario, antes cerrado, se volvió soporte del arte público y punto de encuentro de la comunidad."]},
-      {tag:"Memoria",titulo:"De estación a museo",meta:"Cartografía de mitos",tipo:"mito",
-       mito:{historica:"El predio se reconvirtió en espacio cultural tras el repliegue del ferrocarril.",
-             popular:"Para muchos vecinos sigue siendo, antes que un museo, 'la estación' — el lugar del trabajo que fue."},
-       cuerpo:["El mismo suelo es museo para unos y estación para otros. Las dos memorias conviven."]}
-    ]
-  },
-  {
-    id:"falucho", nombre:"Falucho (3er festival)", x:0.145, y:0.40, cat:"festival",
-    titulo:"Falucho — sede del tercer festival",
-    modelo:"modelos/galpon.glb",
-    paleta:["#378add","#e8a33d","#7d2e1c","#3a6b4a","#efe7d6"],
-    ai:{inicial:"F",nombre:"Voz de Falucho",
-      intro:"Soy Falucho. Acá se hizo el tercer festival y se pintó mucho. Te cuento.",
-      sugerencias:["¿Qué pasó en el 3er festival?","¿Quiénes pintaron?","¿Qué se ve hoy?"],
-      fuentes:[
-        "En la zona de Falucho se desarrolló el tercer festival de muralismo del circuito de Saladillo.",
-        "Fue una de las ediciones con más producción de obra: se pintaron varios muros en el sector.",
-        "El sector está más alejado del centro, lo que llevó el arte público a otro barrio de la ciudad.",
-        "La actividad en Falucho amplió el alcance comunitario del proyecto más allá del predio central."
-      ]},
-    puntos:[
-      {tag:"El festival",titulo:"El tercer festival, acá",meta:"2do/3er ciclo",tipo:"audio",audio:"Testimonio — 1:40",
-       cuerpo:["El tercer festival movilizó al barrio de Falucho: muros, vecinos y artistas trabajando juntos."]},
-      {tag:"Las obras",titulo:"Lo que se pintó",meta:"Archivo",tipo:"galeria",gal:["Muro 1","Muro 2","Detalle"],
-       cuerpo:["Una serie de murales quedó en el sector como huella del festival."]},
-      {tag:"El barrio",titulo:"Llevar el arte a las orillas",meta:"Cartografía de mitos",tipo:"mito",
-       mito:{historica:"Falucho fue elegido para descentralizar el muralismo del casco céntrico.",
-             popular:"En el barrio se recuerda el festival como el momento en que 'el arte vino hasta acá'."},
-       cuerpo:["La elección del lugar es, en sí misma, una declaración sobre a quién pertenece el espacio público."]}
-    ]
-  },
-  {
-    id:"primer-festival", nombre:"Primer festival", x:0.285, y:0.58, cat:"festival",
-    titulo:"Sede del primer festival",
-    modelo:"modelos/galpon.glb",
-    paleta:["#e8a33d","#7d2e1c","#3a6b4a","#4b3b67","#efe7d6"],
-    ai:{inicial:"1",nombre:"Voz del primer festival",
-      intro:"Soy donde empezó todo: el primer festival. Acá nació el circuito. Preguntame.",
-      sugerencias:["¿Cuándo fue el primero?","¿Cómo empezó?","¿Qué quedó?"],
-      fuentes:[
-        "Aquí se realizó el primer festival de muralismo que dio origen al circuito del Museo a Cielo Abierto.",
-        "El primer festival sentó las bases de lo que luego se replicó en otras zonas de la ciudad.",
-        "De esa primera edición surgió la idea de un recorrido de obras públicas conectadas.",
-        "El sitio es, para el proyecto, el punto de partida de toda la cartografía."
-      ]},
-    puntos:[
-      {tag:"El origen",titulo:"Donde empezó el circuito",meta:"Primera edición",tipo:"audio",audio:"Relato fundacional — 2:20",
-       cuerpo:["El primer festival fue la semilla: de acá salió la idea de pintar la ciudad y conectarla."]},
-      {tag:"La obra",titulo:"El primer mural",meta:"Archivo",tipo:"galeria",gal:["Boceto","Proceso","Terminado"],
-       cuerpo:["La obra inaugural marcó el tono de todo lo que vino después."]},
-      {tag:"El legado",titulo:"De una obra a un circuito",meta:"Cartografía de mitos",tipo:"mito",
-       mito:{historica:"El primer festival fue planificado como evento puntual; su éxito lo volvió circuito.",
-             popular:"Algunos dicen que nadie imaginaba que aquello iba a crecer tanto."},
-       cuerpo:["Lo que empezó como un evento terminó siendo la identidad cultural de un sector de la ciudad."]}
-    ]
-  },
-  {
-    id:"monumento-vasco", nombre:"Monumento al Vasco", x:0.50, y:0.62, cat:"monumento",
-    titulo:"Monumento al Vasco",
-    modelo:"modelos/galpon.glb",
-    paleta:["#c0397a","#8a8d72","#7d2e1c","#4b3b67","#efe7d6"],
-    ai:{inicial:"V",nombre:"Voz del monumento",
-      intro:"Soy el monumento al Vasco. De mí hay fotogrametría completa. Preguntame quién soy.",
-      sugerencias:["¿Quién es el Vasco?","¿Quién te hizo?","¿Por qué un monumento?"],
-      fuentes:[
-        "El monumento al Vasco homenajea a una figura significativa para la identidad local de Saladillo.",
-        "El monumento cuenta con registro completo en fotogrametría, lo que permite recorrerlo en 3D.",
-        "Se encuentra próximo al sector de las vías, en el borde este de la zona del predio.",
-        "El registro digital del monumento forma parte del archivo base de esta cartografía."
-      ]},
-    puntos:[
-      {tag:"La figura",titulo:"Quién fue el Vasco",meta:"Identidad local",tipo:"audio",audio:"Semblanza — 1:55",
-       cuerpo:["La voz del lugar reconstruye quién fue el Vasco y por qué la comunidad quiso recordarlo."]},
-      {tag:"El registro",titulo:"Fotogrametría completa",meta:"Archivo 3D",tipo:"galeria",gal:["Vista frente","Vista lateral","Detalle"],
-       cuerpo:["El monumento está escaneado en 3D: acá va el modelo navegable real, no esta vista representativa."]},
-      {tag:"La memoria",titulo:"¿Por qué se lo recuerda?",meta:"Cartografía de mitos",tipo:"mito",
-       mito:{historica:"El monumento responde a un reconocimiento documentado de la comunidad.",
-             popular:"Alrededor de la figura del Vasco circulan anécdotas que el barrio sigue contando."},
-       cuerpo:["Un monumento fija una versión; el relato oral guarda las otras."]}
-    ]
-  },
-  {
-    id:"mural-vasco", nombre:"Mural del Vasco", x:0.40, y:0.88, cat:"mural",
-    titulo:"Mural del Vasco",
-    modelo:"modelos/galpon.glb",
-    paleta:["#378add","#e8a33d","#7d2e1c","#3a6b4a","#efe7d6"],
-    ai:{inicial:"V",nombre:"Voz del mural del Vasco",
-      intro:"Soy el mural del Vasco. No me confundas con el monumento: yo soy pintura. Preguntame.",
-      sugerencias:["¿Sos el mismo Vasco?","¿Quién te pintó?","¿Qué contás?"],
-      fuentes:[
-        "El mural del Vasco representa, en pintura mural, a la misma figura local homenajeada en el monumento.",
-        "El mural y el monumento son obras distintas, en lugares distintos de la ciudad.",
-        "El mural forma parte del circuito de obras públicas del Museo a Cielo Abierto.",
-        "Como mural, dialoga con su entorno inmediato y con quienes pasan a diario por el lugar."
-      ]},
-    puntos:[
-      {tag:"El artista",titulo:"Quién lo pintó",meta:"Testimonio",tipo:"audio",audio:"Audio del artista — 1:30",
-       cuerpo:["La voz del muralista cuenta cómo retrató al Vasco y qué quiso transmitir."]},
-      {tag:"El proceso",titulo:"De la pared al retrato",meta:"Archivo",tipo:"galeria",gal:["Pared","Proceso","Obra"],
-       cuerpo:["Las etapas del mural, del muro vacío a la figura terminada."]},
-      {tag:"Mural y monumento",titulo:"¿Por qué dos veces el Vasco?",meta:"Cartografía de mitos",tipo:"mito",
-       mito:{historica:"La figura del Vasco fue homenajeada tanto en escultura como en mural, en momentos distintos.",
-             popular:"Para algunos vecinos el mural 'se parece más' al Vasco real que el monumento."},
-       cuerpo:["Dos lenguajes, una misma memoria: la escultura y la pintura discuten quién lo representa mejor."]}
-    ]
-  },
-  {
-    id:"plaza-espana", nombre:"Plaza España", x:0.345, y:0.56, cat:"museo",
-    titulo:"Plaza España — borde del predio",
-    modelo:"modelos/galpon.glb",
-    paleta:["#3a6b4a","#8a8d72","#e8a33d","#4b3b67","#efe7d6"],
-    ai:{inicial:"P",nombre:"Voz de Plaza España",
-      intro:"Soy Plaza España, en el borde del predio. Marco la entrada al recorrido. Preguntame.",
-      sugerencias:["¿Qué hay cerca tuyo?","¿Sos parte del museo?","¿Qué se ve desde acá?"],
-      fuentes:[
-        "Plaza España se ubica en el borde del predio ferroviario, próxima al núcleo del Museo a Cielo Abierto.",
-        "Funciona como una de las puertas de entrada al recorrido de murales del predio.",
-        "Es un espacio verde de uso cotidiano para los vecinos del sector.",
-        "Su cercanía a las obras la integra naturalmente a la cartografía cultural."
-      ]},
-    puntos:[
-      {tag:"La entrada",titulo:"Puerta del recorrido",meta:"Acceso",tipo:"audio",audio:"Ambiente de plaza — 1:10",
-       cuerpo:["Desde Plaza España arranca buena parte del recorrido por las obras del predio."]},
-      {tag:"El verde",titulo:"Espacio de todos los días",meta:"Uso vecinal",tipo:"galeria",gal:["Mañana","Tarde","Evento"],
-       cuerpo:["La plaza es vida cotidiana: bancos, sombra, encuentro. El arte la rodea."]},
-      {tag:"El nombre",titulo:"¿Por qué 'España'?",meta:"Cartografía de mitos",tipo:"mito",
-       mito:{historica:"El nombre responde a la herencia inmigratoria de la comunidad.",
-             popular:"Como en muchos pueblos, conviven varias versiones sobre el origen del nombre."},
-       cuerpo:["El nombre de una plaza guarda la historia de quiénes la fundaron."]}
-    ]
-  }
-]};
+const SITIO = { ciudad:"Saladillo", lugares: (window.SITIOS||[]).map(function(s){
+  // Adapta el formato simple de sitios.js al formato interno del visor.
+  var paletas=["#7d2e1c","#8a8d72","#3a3530","#c9bca3","#1a1410"];
+  var v = s.voz||{};
+  return {
+    id:s.id, nombre:s.nombre, x:s.x, y:s.y, cat:s.cat||"mural",
+    titulo:s.nombre, modelo:s.modelo||"", paleta:paletas,
+    links: s.links||[],
+    ai:{
+      inicial:(s.nombre||"?").trim()[0]||"?",
+      nombre:v.nombre||("Voz de "+(s.nombre||"")),
+      intro:v.intro||("Soy "+(s.nombre||"este lugar")+". Preguntame."),
+      sugerencias:v.sugerencias||["¿Qué es este lugar?","¿Quién lo hizo?","¿Qué historia tenés?"],
+      fuentes:v.fuentes||[]
+    },
+    puntos:(s.puntos||[]).map(function(p){
+      return {
+        tag:p.tag, titulo:p.titulo, meta:p.meta, tipo:p.tipo, cuerpo:p.cuerpo||[],
+        audio:p.audio||"", fotos:p.fotos||[], gal:p.gal||null, mito:p.mito||null
+      };
+    })
+  };
+})};
 
 /* ============================================================
    MAPA 2.5D — escena Three.js vista en perspectiva isométrica.
@@ -779,6 +632,11 @@ function abrirLugar(i){
   document.getElementById('hint').style.opacity=.85;rx=ry=trx=try_=0;
   document.getElementById('ai-av').textContent=LUG.ai.inicial;
   document.getElementById('ai-name').textContent=LUG.ai.nombre;
+  // barra de links
+  const lb=document.getElementById('links-bar');
+  const iconos={video:'▶',nota:'✎',documento:'▤',web:'↗'};
+  lb.innerHTML=(LUG.links||[]).filter(l=>l.url && l.url.indexOf('...')===-1)
+    .map(l=>`<a href="${l.url}" target="_blank" rel="noopener">${iconos[l.tipo]||'↗'} ${l.titulo||'Link'}</a>`).join('');
   buildSuggest();document.getElementById('log').innerHTML='';
   mapActive=false;sheetActive=true;
   mapView.style.display='none';sheetView.classList.add('show');backBtn.style.display='grid';
@@ -796,9 +654,24 @@ function abrirPunto(i){const ptn=LUG.puntos[i];
   document.getElementById('p-tag').textContent=ptn.tag;document.getElementById('p-title').textContent=ptn.titulo;
   const body=document.getElementById('p-body');let html='';
   if(ptn.meta)html+=`<div class="meta">${ptn.meta}</div>`;
-  if(ptn.tipo==='audio')html+=`<div class="audio"><button>▶</button><div class="wf">${Array.from({length:34},()=>`<i style="height:${20+Math.random()*70}%"></i>`).join('')}</div><div class="lbl">${ptn.audio}</div></div>`;
-  if(ptn.tipo==='galeria'){const cols=['#6b4a32','#2f6d6a','#a8432a'];
-    html+=`<div class="gal">${ptn.gal.map((c,k)=>`<figure><div class="ph" style="background:linear-gradient(135deg,${cols[k%3]},#1a1410)"></div><figcaption>${c}</figcaption></figure>`).join('')}</div>`;}
+  // AUDIO: si hay archivo real, reproductor real; si no, el simulado
+  if(ptn.tipo==='audio'){
+    if(ptn.audio && ptn.audio.trim()){
+      html+=`<audio controls preload="none" style="width:100%;margin-bottom:14px"><source src="${ptn.audio}"></audio>`;
+    } else {
+      html+=`<div class="audio"><button>▶</button><div class="wf">${Array.from({length:34},()=>`<i style="height:${20+Math.random()*70}%"></i>`).join('')}</div><div class="lbl">Audio (cargá el archivo en sitios.js)</div></div>`;
+    }
+  }
+  // GALERIA: si hay fotos reales, mostrarlas; si no, los rectángulos de color
+  if(ptn.tipo==='galeria'){
+    const fotos=(ptn.fotos&&ptn.fotos.length)?ptn.fotos:null;
+    if(fotos){
+      html+=`<div class="gal">${fotos.map(f=>`<figure><div class="ph" style="background-image:url('${f}')"></div></figure>`).join('')}</div>`;
+    } else {
+      const cols=['#6b4a32','#2f6d6a','#a8432a'];const caps=ptn.gal||['Foto 1','Foto 2','Foto 3'];
+      html+=`<div class="gal">${caps.map((c,k)=>`<figure><div class="ph" style="background:linear-gradient(135deg,${cols[k%3]},#1a1410)"></div><figcaption>${c}</figcaption></figure>`).join('')}</div>`;
+    }
+  }
   ptn.cuerpo.forEach(p=>html+=`<p>${p}</p>`);
   if(ptn.tipo==='mito')html+=`<div class="vs"><div class="col h"><h3>Versión documentada</h3><p>${ptn.mito.historica}</p></div><div class="col p"><h3>Versión popular</h3><p>${ptn.mito.popular}</p></div></div>`;
   body.innerHTML=html;panel.classList.add('open');
