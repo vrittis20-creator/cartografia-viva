@@ -65,11 +65,18 @@ window.GEO_SALADILLO = {
     font-family:'Arial Narrow',sans-serif;font-size:11px;letter-spacing:.04em;color:#6a5d49;
     display:flex;justify-content:space-between;align-items:center}
   .map-foot b{color:var(--brick)}
-  .legend{position:absolute;left:10px;bottom:10px;z-index:4;background:rgba(20,16,12,.7);
-    border:1px solid rgba(201,188,163,.25);border-radius:3px;padding:7px 9px;backdrop-filter:blur(2px)}
-  .legend div{font-family:'Arial Narrow',sans-serif;font-size:10px;color:#d9cdb4;letter-spacing:.04em;
-    display:flex;align-items:center;gap:6px;margin:2px 0}
-  .legend i{width:9px;height:9px;border-radius:2px;display:inline-block;font-style:normal}
+  .legend{position:absolute;left:10px;bottom:10px;z-index:4;background:rgba(20,16,12,.82);
+    border:1px solid rgba(201,188,163,.28);border-radius:5px;padding:9px 10px 7px;backdrop-filter:blur(3px);
+    max-height:62%;overflow-y:auto}
+  .legend .legend-title{font-family:'Arial Narrow',sans-serif;font-size:9px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--sun);margin-bottom:6px;font-weight:700}
+  .legend .legend-row{font-family:'Arial Narrow',sans-serif;font-size:11px;letter-spacing:.02em;color:#e4dcc8;
+    display:flex;align-items:center;gap:7px;margin:3px 0;cursor:pointer;user-select:none;transition:opacity .15s}
+  .legend .legend-row.off{opacity:.4}
+  .legend .legend-row .chk{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--c);
+    background:var(--c);color:var(--ink);font-size:10px;display:grid;place-items:center;flex:none;font-weight:700}
+  .legend .legend-row.off .chk{background:transparent;color:transparent}
+  .legend .legend-row i{width:8px;height:8px;border-radius:2px;display:inline-block;flex:none}
   #map-hint{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:4;
     font-family:'Arial Narrow',sans-serif;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
     color:#d9cdb4;opacity:.8;pointer-events:none;transition:opacity .6s;background:rgba(20,16,12,.4);
@@ -324,10 +331,17 @@ const GEO = {
    colorPin: color de la gota en el mapa (categoría).
    ============================================================ */
 const CAT = {
-  museo:{color:"#3a6b4a", label:"Museo a Cielo Abierto"},
-  festival:{color:"#e8a33d", label:"Festivales"},
-  monumento:{color:"#c0397a", label:"Monumentos (con fotogrametría)"},
-  mural:{color:"#378add", label:"Murales"}
+  mural:      {color:"#378add", label:"Murales"},
+  patrimonio: {color:"#a8432a", label:"Patrimonio (lugares, edificios)"},
+  simbolico:  {color:"#e8a33d", label:"Objetos simbólicos"},
+  obra3d:     {color:"#7b4bc0", label:"Obras / esculturas 3D"},
+  fachada:    {color:"#2f9e8f", label:"Fachadas"},
+  museistico: {color:"#c0397a", label:"Objetos museísticos"},
+  panorama:   {color:"#5a9e3a", label:"360° de lugares"},
+  // categorías antiguas (compatibilidad con lo ya cargado):
+  museo:      {color:"#3a6b4a", label:"Museo a Cielo Abierto"},
+  festival:   {color:"#d98a2b", label:"Festivales"},
+  monumento:  {color:"#b5377a", label:"Monumentos"}
 };
 
 const SITIO = { ciudad:"Saladillo", lugares: (window.SITIOS||[]).map(function(s){
@@ -485,16 +499,32 @@ function buildPins(){
   document.getElementById('count-done').textContent=visitados.size;
   buildLegend();
 }
+// FILTROS POR CAPA: categorías activas (las que se muestran)
+let capasActivas=null; // null = todas; si no, un Set de categorías visibles
 function buildLegend(){
   const present=[...new Set(SITIO.lugares.map(l=>l.cat))];
-  document.getElementById('legend').innerHTML=present.map(c=>
-    `<div><i style="background:${CAT[c].color}"></i>${CAT[c].label}</div>`).join('');
+  if(capasActivas===null) capasActivas=new Set(present); // al inicio, todas activas
+  const cont=document.getElementById('legend');
+  cont.innerHTML='<div class="legend-title">Capas</div>'+present.map(c=>{
+    const on=capasActivas.has(c);
+    return `<label class="legend-row ${on?'':'off'}" data-cat="${c}">
+      <span class="chk" style="--c:${CAT[c].color}">${on?'✓':''}</span>
+      <i style="background:${CAT[c].color}"></i>${CAT[c].label||c}</label>`;
+  }).join('');
+  cont.querySelectorAll('.legend-row').forEach(row=>{
+    row.onclick=()=>{const c=row.dataset.cat;
+      if(capasActivas.has(c))capasActivas.delete(c); else capasActivas.add(c);
+      buildLegend();
+    };
+  });
 }
 function projectPins(){
   const wrap=document.getElementById('map-canvas-wrap');const w=wrap.clientWidth,h=wrap.clientHeight;
   SITIO.lugares.forEach((lug,i)=>{
-    const v=new THREE.Vector3(gx(lug.x),2.2,gz(lug.y)).project(mcam);
     const el=pinEls[i];if(!el)return;
+    // ocultar si su capa está destildada
+    if(capasActivas && !capasActivas.has(lug.cat)){el.style.display='none';return;}
+    const v=new THREE.Vector3(gx(lug.x),2.2,gz(lug.y)).project(mcam);
     el.style.left=((v.x*.5+.5)*w)+'px';el.style.top=((-v.y*.5+.5)*h)+'px';
     el.style.display=(v.z<1)?'flex':'none';
   });
