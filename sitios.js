@@ -19,8 +19,16 @@
    - Son números de 0 a 1. x=horizontal (0 izquierda, 1 derecha),
      y=vertical (0 arriba, 1 abajo). Probás y ajustás mirando el mapa.
 
-   CATEGORÍAS disponibles (definen el color del pin):
-     "museo"  "festival"  "monumento"  "mural"
+   CATEGORÍAS disponibles (definen el color del pin y la capa del filtro):
+     "mural"       → murales
+     "patrimonio"  → lugares y edificios patrimoniales
+     "simbolico"   → objetos con valor simbólico
+     "obra3d"      → obras y esculturas 3D
+     "fachada"     → fachadas
+     "museistico"  → objetos museísticos
+     "panorama"    → 360° de lugares
+   (Para sumar una capa nueva: avisá y se agrega una línea. Mientras tanto,
+    usá la que más se acerque.)
    ===================================================================== */
 
 window.SITIOS = [
@@ -31,7 +39,7 @@ window.SITIOS = [
   {
     id: "galpon",                         // identificador único, sin espacios
     nombre: "Galpón ferroviario",         // lo que se lee en el pin
-    cat: "museo",                         // categoría (color del pin)
+    cat: "patrimonio",                         // categoría (color del pin)
     x: 0.40, y: 0.63,                     // posición en el mapa (0 a 1)
 
     // --- MODELO 3D (la fotogrametría) ---
